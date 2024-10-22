@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: app-ts
+spec:
+  replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 20%
+      maxUnavailable: 10%
+  selector:
+    matchLabels:
+      api: app-ts
+  template:
+    metadata:
+      labels:
+        api: app-ts
+    spec:
+      containers:
+      - name: app-ts
+        image: igordamiao/app-ts:v5
+        imagePullPolicy: IfNotPresent
+
+        envFrom:
+          - configMapRef:
+              name: app-ts
+          - secretRef:
+              name: 
+        # env: 
+        #   - name: APP
+        #     valueFrom: 
+        #       configMapKeyRef:
+        #         name: app-ts
+        #         key: app-name
+        #   - name: API_KEY
+        #     valueFrom:
+        #       secretKeyRef:
+        #         name: app-ts-secrets
+        #         key: api-key
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "100m"
+          limits:
+            memory: "128Mi"
+            cpu: "200m"
+        ports:
+        - containerPort: 3000
